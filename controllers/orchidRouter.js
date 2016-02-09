@@ -21,6 +21,16 @@ var router = express.Router();
 var bodyParser = require('body-parser');
 router.use(bodyParser.urlencoded({ extended : false }));
 
+router.use('/:id', function (req, res, next) {
+    console.log('middleware called');
+    console.log('id', req.params.id);
+    res.locals.local = {
+        id : req.params.id
+    };
+    console.log(res.locals);
+    next();
+});
+
 // INDEX
 router.get('/', function (req, res) {
     res.render('orchids/index', {
@@ -44,26 +54,21 @@ router.post('/', function (req, res) {
 
 // SHOW
 router.get('/:id', function (req, res) {
-    var id = req.params.id
     res.render('orchids/show', {
-        orchid : orchidsList.getItemAt(id),
-        id : id
+        orchid : orchidsList.getItemAt(req.params.id)
     });
 });
 
 // EDIT
 router.get('/:id/edit', function (req, res) {
-    var id = req.params.id;
     res.render('orchids/edit', {
-        orchid : orchidsList.getItemAt(id),
-        id : id
+        orchid : orchidsList.getItemAt(req.params.id)
     });
 });
 
 // UPDATE
 router.post('/:id', function (req, res) {
-    var id = req.params.id;
-    var orchid = orchidsList.getItemAt(id);
+    var orchid = orchidsList.getItemAt(req.params.id);
     orchid.setName(req.body.name);
     orchid.setImg(req.body.img);
     res.redirect('/orchids');
@@ -71,8 +76,7 @@ router.post('/:id', function (req, res) {
 
 // DELETE
 router.post('/:id/delete', function (req, res) {
-    var id = req.params.id;
-    orchidsList.removeItemAt(id);
+    orchidsList.removeItemAt(req.params.id);
     res.redirect('/orchids');
 });
 
